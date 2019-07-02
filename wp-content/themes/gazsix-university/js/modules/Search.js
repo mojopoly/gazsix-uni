@@ -1,13 +1,13 @@
 //we will write object oriented modular(each class will live in its own individual file like here) js
 
-import $ from 'jquery';
+import $ from 'jquery'; //use this line only for OOP, we have set equeue scripts to NULL in functions.php instead of adding array('jquery') since we are using OOP
 //class is like a blueprint
 class Search {
     //1. describe and create/initiate our object
     //in js whenerver you make a class, you will need to create a constructor that will run whenever we create an object using Search class
     constructor() {
         // alert("hello, im a search");
-        this.addSearchHTML(); //this function needs to sit on top so others could be read
+        this.addSearchHTML(); //this function needs to sit on top so others could be read as it defines HTML classes that all below code hook into "this" refers to the constructor object
         this.resultsDiv = $("#search-overlay__results");
         this.openButton = $(".js-search-trigger");
         this.closeButton = $(".search-overlay__close");
@@ -24,14 +24,14 @@ class Search {
         events() {
             this.openButton.on('click', this.openOverlay.bind(this)); //by default jquery "on" method will change the value of "this" to point to the html element. therefore we add bind(this) so methods in #3 refer to contructor properties
             this.closeButton.on("click", this.closeOverlay.bind(this));
-            $(document).on("keydown", this.keyPressDispatcher.bind(this)); //keyup will only fire once, but keydown fires over and over again
-            this.searchField.on("keyup", this.typingLogic.bind(this)); //keydown fires so immedialty before typingLogic function is ran
+            $(document).on("keydown", this.keyPressDispatcher.bind(this)); //keyup will only fire once, but keydown fires over and over again until you release it
+            this.searchField.on("keyup", this.typingLogic.bind(this)); //keydown fires so immedialty before typingLogic function is ran that we have to change to keyup to give it some time
         }
     //3. methods(function/action,verbs...)
     typingLogic() {
-        if (this.searchField.val() != this.previousValue) { //this if makes sure spinner doesnt load if we're moveing pointer and not actually changing characters
-            clearTimeout(this.typingTimer); //this will clear the timer and only fires up below console if typer has waited for 2 seconds
-            if (this.searchField.val()) { //this if makes sure that search field has a value before doing anything
+        if (this.searchField.val() != this.previousValue) { //this if makes sure spinner doesnt load if we're moveing pointer and not actually changing search characters
+            clearTimeout(this.typingTimer); //this will clear the timer and only fires up below console if typer has waited for 750 ms
+            if (this.searchField.val()) { //this if makes sure that search field has a value before sending a request to the server
                 if (!this.isSpinnerVisible) { //this avoid rerunning spinner eveytime a new char is fired
                     this.resultsDiv.html('<div class="spinner-loader"></div>');
                     this.isSpinnerVisible =true;
@@ -41,15 +41,15 @@ class Search {
                 this.resultsDiv.html('');
                 this.isSpinnerVisible =false;
             }
-            
         }
         // alert("search field is workin!");
-       
-        this.previousValue = this.searchField.val();
+        this.previousValue = this.searchField.val();//in order for the page to read and implement this line of code, we will need to set this.searchField to keyup
     }
     getResults() {
-        //get results using our own custom api url; we dont need to worry sync and async anymore, cuz we longer need to send multiple json requests
-        $.getJSON(universityData.root_url + '/wp-json/university/v1/search?term=' + this.searchField.val(), (results) => {
+        //get results using our own custom api url; we dont need to worry sync and async anymore, cuz we no longer need to send multiple json requests
+        $.getJSON(universityData.root_url + '/wp-json/university/v1/search?term=' + this.searchField.val(), (results) => {//with => we don't need to bind this jquery function like event functions, here by adding the custom route, we are calling search-route.php file, results is the response back from server in searhc-route.php  
+            //we can't use if statement inside template literal, only option available if ternary operator
+            //generalInfo, programs, professors, etc have been defined in search-route.php
             this.resultsDiv.html(`
             <div class ='row'>
                 <div class = "one-third">
@@ -94,16 +94,12 @@ class Search {
                         </div>
                     </div>
                     `).join('')}
-                    
-            
             <div>
-            
-            
             `);
             this.isSpinnerVisible=false;
 
         });
-        
+        //below is synchrounus  ajax call, which means we need one for each type of search(aka post/page, etc)
         // this.resultsDiv.html('imagine dragons');
         // this.isSpinnerVisible =false;
         //following method is an asynchronus ajax call using wp auto generated api
@@ -137,12 +133,12 @@ class Search {
     }
     openOverlay() {
         this.searchOverlay.addClass("search-overlay--active");
-        $("body").addClass("body-no-scroll"); //this class will set overflow to hidden which will remove the ability to scroll
+        $("body").addClass("body-no-scroll"); //this class will set overflow to hidden which will remove the ability to scroll when search bar is open
         // console.log("open ran");
         this.isOverlayOpen= true;
         this.searchField.val('');
-        setTimeout(() =>this.searchField.focus(), 301);//300ms is how long it takes for css animation for overlay to load, if a function is on a single line, we dont need curly brackets
-        return false; //this will prevent the default behavior of anchor/link elements
+        setTimeout(() =>this.searchField.focus(), 301);//this function focuses on search field as soon as it is opened; 300ms is how long it takes for css animation for overlay function to load, if a function is on a single line, we dont need curly brackets
+        return false; //this will prevent the default behavior of anchor/link elements /aka will not open traditional fallback search form if JS is enabled
     }
     closeOverlay() {
 
@@ -159,7 +155,6 @@ class Search {
         } else if(e.keyCode == 27 && this.isOverlayOpen) {
             this.closeOverlay();
         }
-
     }
     addSearchHTML() {//append is how we add html to js; we add it in js file so if some visitors have js disabled dont see it
         $("body").append(`

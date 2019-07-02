@@ -9,7 +9,7 @@
             <span class="metabox__main"><?php the_title(); ?></span></p>
         </div>           
         <div class="generic-content">
-                <?php the_content(); ?>
+            <?php the_content(); ?>
         </div>
         <?php $mapLocation = get_field('map_location') ?>
         <div class= "acf-map">

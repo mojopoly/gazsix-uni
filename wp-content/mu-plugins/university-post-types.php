@@ -22,10 +22,10 @@ function university_post_types() {
     register_post_type('event', array(
         'capability_type' => 'event', //by default type is post, this line is to grant custom user permission to only modify events
         'map_meta_cap' => true, //this line is required to activate the top line
-        'supports' => array('title', 'editor', 'excerpt'),
-        'rewrite' => array('slug' => 'events'),
-        'has_archive' => true,
-        'public' => true,
+        'supports' => array('title', 'editor', 'excerpt'), //by default without adding the array, title and editor is added, here, we added excerpt manually along other 2 pre-default ones
+        'rewrite' => array('slug' => 'events'), //this allows us to change the slug with event post type
+        'has_archive' => true, //with this, we can create archive-event.php
+        'public' => true, //this make the post type visible to editors of the website
         'labels' => array(
             'name' => 'Events',
             'add_new_item' => 'Add New Event',
@@ -53,62 +53,61 @@ function university_post_types() {
         'menu_icon' => 'dashicons-awards'
     ));
 
-        //Professor Post Type
+    //Professor Post Type
+    register_post_type('professor', array(
+        'show_in_rest' => true, //this will show this custom post type in rest url
+        'supports' => array('title', 'editor', 'thumbnail'),
+        // 'rewrite' => array('slug' => 'professors'),
+        // 'has_archive' => true, we dont need archive for professors as its not its own menu item, its related to programs
+        'public' => true,
+        'labels' => array(
+            'name' => 'Professors',
+            'add_new_item' => 'Add New Professor',
+            'edit_item' => 'Edit Professor',
+            'all_items' => 'All Professors',
+            'singular_name' => 'Professor'
+        ),
+        'menu_icon' => 'dashicons-welcome-learn-more'
+    ));
 
-        register_post_type('professor', array(
-            'show_in_rest' => true, //this will show this custom post type in rest url
-            'supports' => array('title', 'editor', 'thumbnail'),
-            // 'rewrite' => array('slug' => 'professors'),
-            // 'has_archive' => true, we dont need archive for professors as its not its own menu item, its related to programs
-            'public' => true,
-            'labels' => array(
-                'name' => 'Professors',
-                'add_new_item' => 'Add New Professor',
-                'edit_item' => 'Edit Professor',
-                'all_items' => 'All Professors',
-                'singular_name' => 'Professor'
-            ),
-            'menu_icon' => 'dashicons-welcome-learn-more'
-        ));
+    //Note Post Type
 
-        //Note Post Type
+    register_post_type('note', array(
+        'capability_type' => 'note', //doesnt have to be named note, anything that's not called post.. we do this to give permission to subscribers the right to post notes
+        'map_meta_cap' => true, //this along with above line will create a new row in the custom role plugin that we installed
+        'show_in_rest' => true, //this will show this custom post type in rest API url
+        'supports' => array('title', 'editor', 'author'),
+        // 'rewrite' => array('slug' => 'professors'),
+        // 'has_archive' => true, we dont need archive for professors as its not its own menu item, its related to programs
+        'public' => false, //we wants our notes to be private for each user account; setting it to false wont show notes in public queries or search results
+        'show_ui' => true, //above line will also hide my-notes from nav bar, and this line will bring it back to business
+        'labels' => array(
+            'name' => 'Notes',
+            'add_new_item' => 'Add New Note',
+            'edit_item' => 'Edit Note',
+            'all_items' => 'All Notes',
+            'singular_name' => 'Note'
+        ),
+        'menu_icon' => 'dashicons-welcome-write-blog'
+    ));
 
-        register_post_type('note', array(
-            'capability_type' => 'note', //doesnt have to be named note, anything that's not called post.. we do this to give permission to subscribers the right to post notes
-            'map_meta_cap' => true, //this along with above line will create a new row in the custom role plugin that we installed
-            'show_in_rest' => true, //this will show this custom post type in rest API url
-            'supports' => array('title', 'editor', 'author'),
-            // 'rewrite' => array('slug' => 'professors'),
-            // 'has_archive' => true, we dont need archive for professors as its not its own menu item, its related to programs
-            'public' => false, //we wants our notes to be private for each user account; setting it to false wont show notes in public queries or search results
-            'show_ui' => true, //above line will also hide my-notes from nav bar, and this line will bring it back to business
-            'labels' => array(
-                'name' => 'Notes',
-                'add_new_item' => 'Add New Note',
-                'edit_item' => 'Edit Note',
-                'all_items' => 'All Notes',
-                'singular_name' => 'Note'
-            ),
-            'menu_icon' => 'dashicons-welcome-write-blog'
-        ));
-
-        //Like Post Type
-        register_post_type('like', array(
-            // 'capability_type' => 'note', we dont need these 2 lines, since we will handle this on our own
-            // 'map_meta_cap' => true, 
-            'show_in_rest' => false, //since we want to create our own custom endpoint, we will set this to false
-            'supports' => array('title'),
-            'public' => false, 
-            'show_ui' => true, 
-            'labels' => array(
-                'name' => 'Likes',
-                'add_new_item' => 'Add New Like',
-                'edit_item' => 'Edit Like',
-                'all_items' => 'All Likes',
-                'singular_name' => 'Like'
-            ),
-            'menu_icon' => 'dashicons-heart'
-        ));
+    //Like Post Type
+    register_post_type('like', array(
+        // 'capability_type' => 'note', we dont need these 2 lines, since we will handle this on our own
+        // 'map_meta_cap' => true, 
+        'show_in_rest' => false, //since we want to create our own custom endpoint, we will set this to false
+        'supports' => array('title'),
+        'public' => false, 
+        'show_ui' => true, 
+        'labels' => array(
+            'name' => 'Likes',
+            'add_new_item' => 'Add New Like',
+            'edit_item' => 'Edit Like',
+            'all_items' => 'All Likes',
+            'singular_name' => 'Like'
+        ),
+        'menu_icon' => 'dashicons-heart'
+    ));
 }
 
 add_action('init', 'university_post_types'); 

@@ -20,7 +20,6 @@
                                     'compare' => '=', //we're looking for an exact match
                                     'value' => get_the_ID()
                                 )
-
                             )   
                         ));
                         $existStatus = 'no';

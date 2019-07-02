@@ -11,10 +11,10 @@
         the_post();
         $mapLocation= get_field('map_location');
         ?>
-            <div data-lat="<?php echo $mapLocation['lat']?>" data-lng="<?php echo $mapLocation['lng'] ?>" class="marker">
-                <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
-                <?php echo $mapLocation['address']; ?>
-            </div>
+          <div data-lat="<?php echo $mapLocation['lat']?>" data-lng="<?php echo $mapLocation['lng'] //data-lat and data-lng are used by GoogleMap.js ?>" class="marker">
+              <h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+              <?php echo $mapLocation['address']; ?>
+          </div>
       <?php } ?>
       </div>
     </div>

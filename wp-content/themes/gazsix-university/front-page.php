@@ -18,11 +18,11 @@
           $today = date('Ymd');
           $homepageEvents = new WP_Query(array(
             'posts_per_page' => 2, //-1 will return all posts that meet following reqs
-            'post_type' => 'event',
-            'meta_key' => 'event_date',
-            'orderby' => 'meta_value_num', //meta-value is how we tell wp that we wanna use meta-key and for numbers, we use num
-            'order' => 'ASC',
-            'meta_query' => array(
+            'post_type' => 'event', //we have already defined this post type in mu-plugins folder
+            'meta_key' => 'event_date',//this goes hand in hand with orderby
+            'orderby' => 'meta_value_num', //meta-value is how we tell wp that we wanna order by meta-key and for ordering by numbers, we use num, otherwise meta_value defaults to letters and words
+            'order' => 'ASC', //order and orderby must be used together; by default, order is set to desc
+            'meta_query' => array(//we use meta query to check that order is by upcoming datescompared with $today
               array(
                 'key' => 'event_date',
                 'compare' => '>=',
@@ -61,8 +61,8 @@
                 </a>
                 <div class="event-summary__content">
                   <h5 class="event-summary__title headline headline--tiny"><a href="<?php the_permalink(); ?>"><?php the_title();?></a></h5>
-                  <p><?php if(has_excerpt()) {
-                      echo get_the_excerpt();
+                  <p><?php if(has_excerpt()) {//this will give you the option not to have to add custom excerpt to every single post
+                      echo get_the_excerpt(); //if we use the_excerpt by default, it will add automatic spacing, which might not be desireable
                   } else {
                       echo wp_trim_words(get_the_content(), 18);
                   }
@@ -71,9 +71,6 @@
               </div>
             <?php } wp_reset_postdata(); //always use this after your custom query 
           ?>
-
-
-        
         <p class="t-center no-margin"><a href="<?php echo site_url('/blog') ?>" class="btn btn--yellow">View All Blog Posts</a></p>
       </div>
     </div>

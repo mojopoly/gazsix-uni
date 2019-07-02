@@ -1,3 +1,4 @@
+//This code has been imported and modified from ACF Google Map 
 import $ from 'jquery';
 
 class GMap {

@@ -6,7 +6,7 @@ require get_theme_file_path('/inc/like-route.php');
 
 
 function university_custom_rest() {//this function adds new custom field to wp api, post by default doesnt exist as it is a custom field
-    register_rest_field('post','authorName',array(
+    register_rest_field('post','authorName',array( //'post' is the field type
         'get_callback' => function() {return get_the_author();}
     ));
     //add new rest fields here
@@ -15,6 +15,8 @@ function university_custom_rest() {//this function adds new custom field to wp a
     ));
 }
 add_action('rest_api_init', 'university_custom_rest'); //first argument is the wp function that we want to hook onto
+
+
 //create a recycleable function for page banners and is flexible depedning on input; use get_template_part for 
 //non-changing inputs like events setup
 function pageBanner($args = NULL) {//null will make args optional
@@ -26,11 +28,12 @@ function pageBanner($args = NULL) {//null will make args optional
     }
     if (!$args['photo']) {
         if (get_field('page_banner_background_image')) {
-            $args['photo'] = get_field('page_banner_background_image')['sizes']['pageBanner'];
+            $args['photo'] = get_field('page_banner_background_image')['sizes']['pageBanner'];//check below $t to figure why we used ['sizes']['pageBanner']
+            //$t = get_field('page_banner_background_image');
+            //print_r($t); 
         } else {
             $args['photo'] = get_theme_file_uri('images/ocean.jpg');
         }
-
     }
     ?>
     <div class="page-banner">
@@ -43,13 +46,14 @@ function pageBanner($args = NULL) {//null will make args optional
         </div>  
     </div>
 <?php }
+
 function university_files() {
-    wp_enqueue_script('googleMap', '//maps.googleapis.com/maps/api/js?key=AIzaSyDU2nVP2YQ4ObDg2_USq3vVcz_X0Ib3Pj8', NULL, microtime(), true ); //this line to activate js for loading Gmaps
+    wp_enqueue_script('googleMap', '//maps.googleapis.com/maps/api/js?key=AIzaSyDU2nVP2YQ4ObDg2_USq3vVcz_X0Ib3Pj8', NULL, microtime(), true ); //this line to activate js for loading Gmaps on frontend
     wp_enqueue_script('main-university-js', get_theme_file_uri('/js/scripts-bundled.js'), NULL, microtime(), true ); //if we dont use bundling like the way in js structure in this project, instead of NULL, we wanna add "array('jquery')"
     wp_enqueue_style('custom-google-fonts', '//fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i,700,700i|Roboto:100,300,400,400i,700,700i');
     wp_enqueue_style('font-awesome', '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
     wp_enqueue_style('university_main_styles', get_stylesheet_uri(), NULL, microtime());
-    wp_localize_script('main-university-js', 'universityData', array( //this function will make our JSON API request flexible so it runs on every machine
+    wp_localize_script('main-university-js', 'universityData', array( //this function will make our JSON API request flexible so it runs on every machine, handle name must match js file name(main-university-js)
         'root_url' => get_site_url(),
         'nonce' => wp_create_nonce('wp_rest')
     ));
@@ -68,9 +72,10 @@ function university_features() {
     add_theme_support('title-tag');//this to add title tag to each page uniquely
 }
 add_action('after_setup_theme', 'university_features');
-//below code will modify default query archive page for events instead of creating a brand new custom query
+
+//below code will modify default query archive page for events, campuses, and programs instead of creating a brand new custom query
 function university_adjust_queries($query) {
-    //this block of code will customize campus archive query to make it flexible, no matter how many campuses we have
+    //this block of code will customize campus archive query to make it flexible, no matter how many campuses we have by setting post per page to -1
     if (!is_admin() AND is_post_type_archive('campus') AND $query->is_main_query()) {
         $query->set('posts_per_page', -1);      
     }
@@ -81,7 +86,7 @@ function university_adjust_queries($query) {
         $query->set('posts_per_page', -1);      
     }
     //this block of code will customize event query
-    if (!is_admin() AND is_post_type_archive('event') AND $query->is_main_query()) {
+    if (!is_admin() AND is_post_type_archive('event') AND $query->is_main_query()) {//is_admin returns true if you're on the admin dashboard;;; is_main_query makes sure that we only manipluate the defualt loop and not any other custom query
         $today = date('Ymd');
         $query->set('meta_key', 'event_date');
         $query->set('orderby', 'meta_value_num');
@@ -96,7 +101,7 @@ function university_adjust_queries($query) {
         );
     }
 }
-add_action('pre_get_posts', 'university_adjust_queries');
+add_action('pre_get_posts', 'university_adjust_queries');//pre_get_posts will give the option to customize default wp loop by letting us pass $query object to manipulate
 
 //api key from google to be activated with following function
 function universityMapKey($api) {
@@ -106,7 +111,6 @@ function universityMapKey($api) {
 add_filter('acf/fields/google_map/api', 'universityMapKey');
 
 //redirect subscriber accounts out of admin and onto homepage   
-
 add_action('admin_init', 'redirectSubsToFrontend');
 
 function redirectSubsToFrontend() {
@@ -119,9 +123,6 @@ function redirectSubsToFrontend() {
 }
 
 //hide top admin bar for subscribers
-
-
-
 function noSubsAdminBar() {
     $ourCurrentUser = wp_get_current_user(); //create a new variable object
     // var_dump($ourCurrentUser);

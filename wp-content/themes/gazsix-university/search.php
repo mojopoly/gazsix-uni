@@ -2,7 +2,7 @@
   get_header();
   pageBanner(array(
     'title' => 'Search Results',
-    'subtitle' => 'You searched for &ldquo;' . esc_html(get_search_query(false)) .'&rdquo;' //html code for left angled double quotes(ldquo); esc_html will output the value as html and not executable code
+    'subtitle' => 'You searched for &ldquo;' . esc_html(get_search_query(false)) .'&rdquo;' //html code for left angled double quotes(ldquo); esc_html will output the value as html and not executable code, false will disable stringtification of inputted search
   ));
   ?>
 

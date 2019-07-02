@@ -57,10 +57,10 @@
             'value' => $today,
             'type' => 'numeric',
             ),
-            array(
-            'key' => 'related_programs',
+            array(//this is how we make relationship between event and program 2-way without having to create a new custom field for program
+            'key' => 'related_programs',//this piece is saying if array of related_programs contains id of current program, then print it
             'compare' => 'LIKE', //means contains
-            'value' => '"' . get_the_ID() . '"' //we need quotation cuz this is how post IDs are saved in WP
+            'value' => '"' . get_the_ID() . '"' //ID of current prograam;; we need quotation cuz this is how post IDs are saved in WP db, the db serialize first and put IDs in ""
             )
          )
         ));
@@ -74,7 +74,7 @@
         }
 
         //to create the relationship to related campus, we dont need to write custom query, using acf custom field properties will suffice
-        //as campuses field live inside program page
+        //as campuses field live inside program page in the admin dash
         wp_reset_postdata();
         $relatedCampuses=get_field('related_campus');
         if($relatedCampuses) {
@@ -91,7 +91,6 @@
             }
             echo '</ul>';
         }
-
     ?>
         </div>
     <?php 
